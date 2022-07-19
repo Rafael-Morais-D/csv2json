@@ -1,20 +1,17 @@
-const jsonValueInput = document.getElementById('jsonValueInput')
-const csvValueInput = document.getElementById('csvValueInput')
+const jsonInput = document.getElementById('jsonInput')
+const csvInput = document.getElementById('csvInput')
 const getConvertButton = document.getElementById('convertButton')
 const getTitle = document.getElementById('title')
 let jsonToCsvButton = document.getElementsByClassName('jsonToCsvConverter')
 let csvToJsonButton = document.getElementsByClassName('csvToJsonConverter')
 
-let jsonInputValue = jsonValueInput.value
-let csvInputValue = csvValueInput.value
-
-jsonValueInput.addEventListener('click', function () {
+jsonInput.addEventListener('click', function () {
   getConvertButton.classList.add('jsonToCsvConverter')
   getConvertButton.classList.remove('csvToJsonConverter')
   getTitle.innerHTML = 'Conversor JSON para CSV'
 })
 
-csvValueInput.addEventListener('click', function () {
+csvInput.addEventListener('click', function () {
   getConvertButton.classList.add('csvToJsonConverter')
   getConvertButton.classList.remove('jsonToCsvConverter')
   getTitle.innerHTML = 'Conversor CSV para JSON'
@@ -23,19 +20,18 @@ csvValueInput.addEventListener('click', function () {
 getConvertButton.addEventListener('click', function () {
   try {
     if (jsonToCsvButton[0]) {
-      let newObjectFromJson = jsonStringToObject(jsonInputValue)
-      // csvInputValue = collectKeysFromJson(newObjectFromJson) + collectValuesFromJson(newObjectFromJson)
-      console.log(newObjectFromJson)
+      let newObjectFromJson = jsonStringToObject(jsonInput.value)
+      csvInput.value = collectKeysFromJson(newObjectFromJson) + collectValuesFromJson(newObjectFromJson)
     } else if (csvToJsonButton[0]) {
-      // jsonInputValue = convertArrayIntoJson(convertCsvIntoArray(csvInputValue))
-      console.log(convertArrayIntoJson(convertCsvIntoArray(csvInputValue)))
+      jsonInput.value = convertArrayIntoJson(convertCsvIntoArray(csvInput.value))
+      console.log(convertArrayIntoJson(convertCsvIntoArray(csvInput.value)))
     }
   } catch (error) {
     alert(error.message)
   }
 })
 
-let exampleJson = '{"name":"John", "age":30, "car":null}'
+let exampleJson = '{"name":"John", "age":30, "car":"Ford"}'
 let exampleCsv = 'id,string,number,booleanTrue,booleanFalse,null,object,array\n1,string1,501,true,false,null,{"first": "first"},[1]\n2,string2,502,true,false,null,{"first": "first"},[1]'
 
 /* Conversão JSON para CSV */
