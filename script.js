@@ -1,62 +1,92 @@
-// let exampleJson = [
-//   {
-//     "id": 1,
-//     "string": "string1",
-//     "number": 501,
-//     "booleanTrue": true,
-//     "booleanFalse": false,
-//     "null": null,
-//     "object": {"first": "first", "second": "second"},
-//     "array": [1, 2, 3, 4]
-//   },
-//   {
-//     "id": 2,
-//     "string": "string2",
-//     "number": 502,
-//     "booleanTrue": true,
-//     "booleanFalse": false,
-//     "null": null,
-//     "object": {"first": "first", "second": "second", "third": "third"},
-//     "array": [1, 2]
-//   }
-// ]
+const jsonValueInput = document.getElementById('jsonValueInput')
+const csvValueInput = document.getElementById('csvValueInput')
+const getConvertButton = document.getElementById('convertButton')
+const getTitle = document.getElementById('title')
+let jsonToCsvButton = document.getElementsByClassName('jsonToCsvConverter')
+let csvToJsonButton = document.getElementsByClassName('csvToJsonConverter')
 
-// let exampleJson = {
-//   "id": 1,
-//   "string": "string1",
-//   "number": 501,
-//   "booleanTrue": true,
-//   "booleanFalse": false,
-//   "null": null,
-//   "object": {"first": "first", "second": "second"},
-//   "array": [1, 2, 3, 4]
-// }
+let jsonInputValue = jsonValueInput.value
+let csvInputValue = csvValueInput.value
 
-let exampleCsv = "id,string,number,booleanTrue,booleanFalse,null,object,array\n1,string1,501,true,false,null,{\"first\": \"first\", \"second\": \"second\"},[1, 2, 3, 4]\n2,string2,502,true,false,null,{\"first\": \"first\", \"second\": \"second\", \"third\": \"third\"},[1, 2]"
+jsonValueInput.addEventListener('click', function () {
+  getConvertButton.classList.add('jsonToCsvConverter')
+  getConvertButton.classList.remove('csvToJsonConverter')
+  getTitle.innerHTML = 'Conversor JSON para CSV'
+})
 
+csvValueInput.addEventListener('click', function () {
+  getConvertButton.classList.add('csvToJsonConverter')
+  getConvertButton.classList.remove('jsonToCsvConverter')
+  getTitle.innerHTML = 'Conversor CSV para JSON'
+})
 
-function collectKeysFromJson(jsonFile) {
-  if (Array.isArray(jsonFile)) {
-    return `${Object.keys(jsonFile[0]).toString()}\n`
-  } else if (typeof jsonFile === 'object') {
-    return `${Object.keys(jsonFile).toString()}\n`
+getConvertButton.addEventListener('click', function () {
+  try {
+    if (jsonToCsvButton[0]) {
+      let newObjectFromJson = jsonStringToObject(jsonInputValue)
+      // csvInputValue = collectKeysFromJson(newObjectFromJson) + collectValuesFromJson(newObjectFromJson)
+      console.log(newObjectFromJson)
+    } else if (csvToJsonButton[0]) {
+      // jsonInputValue = convertArrayIntoJson(convertCsvIntoArray(csvInputValue))
+      console.log(convertArrayIntoJson(convertCsvIntoArray(csvInputValue)))
+    }
+  } catch (error) {
+    alert(error.message)
+  }
+})
+
+let exampleJson = '{"name":"John", "age":30, "car":null}'
+let exampleCsv = 'id,string,number,booleanTrue,booleanFalse,null,object,array\n1,string1,501,true,false,null,{"first": "first"},[1]\n2,string2,502,true,false,null,{"first": "first"},[1]'
+
+/* Conversão JSON para CSV */
+
+function jsonStringToObject(jsonFile) {
+  if (typeof jsonFile === 'string'){
+    return JSON.parse(jsonFile)
+  } else {
+    return jsonFile
+  }
+}
+
+function collectKeysFromJson(object) {
+  if (Array.isArray(object)) {
+    return `${Object.keys(object[0]).toString()}\n`
+  } else if (typeof object === 'object') {
+    return `${Object.keys(object).toString()}\n`
   } else {
     throw new Error('Please use valid format')
   }
 }
 
-function collectValuesFromJson(jsonFile) {
-  if (Array.isArray(jsonFile)) {
+function collectValuesFromJson(object) {
+  if (Array.isArray(object)) {
     let string = ''
-    jsonFile.forEach(element => string += `${Object.values(element).toString()}\n`)
+    object.forEach(element => string += `${Object.values(element).toString()}\n`)
     return string
-  } else if (typeof jsonFile === 'object') {
-    return `${Object.values(jsonFile).toString()}\n`
+  } else if (typeof object === 'object') {
+    return `${Object.values(object).toString()}\n`
   } else {
     throw new Error('Please use valid format')
   }
 }
 
-// let newClsString = collectKeysFromJson(exampleJson) + collectValuesFromJson(exampleJson)
+/* Conversão CSV para JSON */
 
-console.log(exampleCsv)
+function convertCsvIntoArray(csvFile) {
+  return csvFile.split('\n')
+}
+
+/* Função com característica quadrática, necessita refatoração */
+function convertArrayIntoJson(array) {
+  const newObject = new Object()
+  let keys = []
+  let values = []
+  let newJson
+  for(let i = 1; i < array.length; i++) {
+    keys = array[0].split(',')
+    values = array[i].split(',')
+    keys.forEach((element,index) => newObject[element] = values[index])
+    newJson += JSON.stringify(newObject)+','
+  }
+  return newJson
+}
